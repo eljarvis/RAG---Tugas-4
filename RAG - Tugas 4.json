@@ -1,0 +1,305 @@
+{
+  "name": "RAG - Tugas 4",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        -208
+      ],
+      "id": "2c441e30-708a-4148-8b54-9b9c2f5187f6",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1SQ9TRuop1Naz_RE0DhWic5Sm4dlQ3kWZbubZDKBOFc8",
+          "mode": "list",
+          "cachedResultName": "Panduan Penulisan Ilmiah Tugas Akhir Skripsi",
+          "cachedResultUrl": "https://docs.google.com/document/d/1SQ9TRuop1Naz_RE0DhWic5Sm4dlQ3kWZbubZDKBOFc8/edit?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -16,
+        -208
+      ],
+      "id": "058b25af-5ae6-40e2-8454-830b437f2ade",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "ksT1ubTIKciN2qg5",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        208,
+        -208
+      ],
+      "id": "8df770b3-bbba-42e6-ae39-dd0b26bb6714",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "FA6GRoJCygdMaObR",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        192,
+        0
+      ],
+      "id": "7d32bec8-19d4-4cee-9ef3-f079a2abed7a",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "xcjYCzAq9HjllcXd",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        352,
+        0
+      ],
+      "id": "45841220-a987-4618-acd4-0a609fe3cfdb",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Halo, tanyakan seputar penulisan skripsi",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -336,
+        208
+      ],
+      "id": "bda402fe-f7d9-4d19-994d-7c985974cd87",
+      "name": "When chat message received",
+      "webhookId": "eed4756c-99de-4304-994c-6e320d774eb5"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Kamu asisten yang membantu penulisan ilmiah untuk tugas akhir (skripsi).\nGunakan tool Supabase Vector Store untuk memberikan bantuan.\n\nJika informasi tidak tersedia dalam database yang disediakan, jangan\nmenjawab dengan mengarang sendiri, tetapi berikan jawaban \"Maaf, saya\nbelum dapat menjawab karena saya tidak menemukan dalam informasi yang\ntersedia.\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -160,
+        208
+      ],
+      "id": "7064ccd4-cdf6-4ab4-bce6-7f0702a0f389",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -208,
+        416
+      ],
+      "id": "5a3d81f9-c322-4bdc-ad22-e47b316c7ee6",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "xcjYCzAq9HjllcXd",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Panggil tool ini untuk menjawab pertanyaan seputar penulisan ilmiah tugas akhir skripsi berdasarkan isi dokumen PDF panduan.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        336
+      ],
+      "id": "2e645c19-5670-4bea-9c54-6e1ae9240dbf",
+      "name": "Supabase Vector Store1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "FA6GRoJCygdMaObR",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.4,
+      "position": [
+        -64,
+        416
+      ],
+      "id": "91fd028d-8e8c-4445-9f1c-35b4a584baef",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "HhOqfAv12XrHx3aE",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "7bc20cf2-87d8-43ff-bcce-3e1ddd911c95",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dc96f10ae7dc95d3c138575ba243a0a167923dbcb524841d451aadf9135d5fb3"
+  },
+  "nodeGroups": [],
+  "id": "0qMX0gMCGthXEWUj",
+  "tags": []
+}
